@@ -1,0 +1,33 @@
+### S3 Upload and Response JSON Flow
+
+1. Retrieve R Status: Start by fetching the R status from the `PyBotsRunStatus` table.
+   
+2. Extract Document Details: Use the `run_id` to pull document details from `PyBotsDownloadedDocs`.
+
+3. Identify Pending Documents: Fetch the list of documents that are pending for upload to S3.
+
+4. Generate PreSigned URLs: For each document, generate a PreSigned URL to enable upload.
+
+5. Send Metadata to PreSigned Endpoint: Send the document metadata list along with the message ID to the PreSigned endpoint.
+
+6. Receive Metadata and PreSigned URLs: The endpoint responds with document metadata and the corresponding PreSigned URLs for each document.
+
+7. Upload Documents to S3: Use the PreSigned URLs and document metadata to upload each document to S3.
+
+8. Update Status in PyBotsDownloadedDocs: Once a document is successfully uploaded, update its status to "C". In case of failure, mark the status as "PE".
+
+9. Update Run Status: Update the run status in `PyBotsRunStatus` once the document uploads are complete.
+
+### Response JSON Flow
+
+10. Fetch Latest Status: Retrieve the latest run status for various statuses like "C", "PE", "E", "ON", "OM", and "OE".
+
+11. Create JSON Format: Structure the JSON in the following format:
+   - Header: Contains relevant meta information.
+   - Message Metadata: Stores the message ID and additional data.
+   - Body: Contains the main content and results.
+   - Footer: Includes any necessary closing information.
+
+12. Store JSON: Write the generated JSON to a specific path in the FOS shared drive.
+
+13. Update Status in JSON: After the response JSON is created, update the status within the JSON file.
