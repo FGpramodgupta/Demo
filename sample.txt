@@ -1,0 +1,42 @@
+import csv
+
+# Update the fund name randomly for each sample
+fund_names = ["5AM Opportunities II, L.P.", "Future Growth Fund, L.P.", "Innovation Equity Partners, L.P.", "Global Ventures Fund, L.P.", "Prime Investment Fund, L.P."]
+
+# Function to generate a capital call description with varying fund names
+def generate_capital_call_with_fund():
+    fund = random.choice(fund_names)
+    amount = round(random.uniform(25, 35) * 1e6, 0)
+    committed_capital_percent = round(random.uniform(9.0, 11.0), 2)
+    investment_percent = round(random.uniform(95.0, 97.0), 2)
+    management_fee_percent = round(random.uniform(2.0, 4.0), 2)
+    other_costs_percent = round(100 - investment_percent - management_fee_percent, 2)
+    other_costs_desc = random.choice(["reserve for expenses", "call for ISDA", "other expenses"])
+    total_committed_capital = round(random.uniform(75.0, 85.0), 2)
+    
+    return [fund, f"${amount:,.0f}", f"{committed_capital_percent}%", f"{investment_percent}%", f"{management_fee_percent}%", f"{other_costs_desc} ({other_costs_percent}%)", f"{total_committed_capital}%"]
+
+# Generate 100 samples with fund names
+capital_call_samples_with_fund = [generate_capital_call_with_fund() for _ in range(100)]
+
+# Define the CSV file path
+csv_file_path = "/mnt/data/capital_call_samples.csv"
+
+# Write to CSV
+with open(csv_file_path, mode="w", newline="") as file:
+    writer = csv.writer(file)
+    writer.writerow(["Fund", "Capital Call Amount", "Committed Capital (%)", "Investments (%)", "Management Fees (%)", "Other Costs", "Total Committed Capital Called (%)"])
+    writer.writerows(capital_call_samples_with_fund)
+
+csv_file_path  # Return the file path
+
+
+# Convert the generated capital call samples into a paragraph format with each entry separated by a new line.
+capital_call_paragraph = "\n\n".join(
+    [f"In anticipation of upcoming investments and expenses, {sample[0]} is calling capital in an amount totaling {sample[1]} "
+     f"({sample[2]} of committed capital). The funds will be used to support new and follow-on investments ({sample[3]}), "
+     f"management fees ({sample[4]}), and {sample[5]}. Following this capital call, {sample[6]} of committed capital has been called."
+     for sample in capital_call_samples_with_fund]
+)
+
+capital_call_paragraph[:1000]  # Display a portion of the generated text
