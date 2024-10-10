@@ -1,0 +1,52 @@
+{
+  "utterances": [
+    {
+      "text": "In anticipation of upcoming investments and expenses, Future Growth Fund, L.P. is calling capital in an amount totaling $29,339,918 (9.38% of committed capital). The funds will be used to support new and follow-on investments (95.5%), management fees (3.01%), and reserve for expenses (1.49%). Following this capital call, 76.18% of committed capital has been called.",
+      "intent": "CapitalCall",
+      "entities": [
+        {
+          "category": "FundName",
+          "offset": 53,
+          "length": 24,
+          "text": "Future Growth Fund, L.P."
+        },
+        {
+          "category": "Amount",
+          "offset": 92,
+          "length": 10,
+          "text": "$29,339,918"
+        },
+        {
+          "category": "CommittedCapitalPercentage",
+          "offset": 105,
+          "length": 5,
+          "text": "9.38%"
+        },
+        {
+          "category": "InvestmentsPercentage",
+          "offset": 188,
+          "length": 5,
+          "text": "95.5%"
+        },
+        {
+          "category": "ManagementFeesPercentage",
+          "offset": 217,
+          "length": 5,
+          "text": "3.01%"
+        },
+        {
+          "category": "OtherCosts",
+          "offset": 242,
+          "length": 29,
+          "text": "reserve for expenses (1.49%)"
+        },
+        {
+          "category": "TotalCommittedCapital",
+          "offset": 303,
+          "length": 5,
+          "text": "76.18%"
+        }
+      ]
+    }
+  ]
+}
