@@ -1,0 +1,60 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+import time
+
+# Set up Chrome driver
+driver_path = "path/to/chromedriver"  # Update with your chromedriver path
+service = Service(driver_path)
+driver = webdriver.Chrome(service=service)
+
+# Navigate to the webpage
+driver.get("https://www.example.com")  # Update with the correct URL
+
+# Function to get dropdown values and iterate through them
+def get_dropdown_values_by_id(dropdown_id):
+    dropdown = Select(driver.find_element(By.ID, dropdown_id))
+    return [option.text for option in dropdown.options]
+
+# Sleep function
+def sleep(seconds):
+    time.sleep(seconds)
+
+# Main logic for nested dropdowns and actions
+def iterate_dropdowns():
+    # Get the values from the first dropdown (ddlinvestor)
+    investor_values = get_dropdown_values_by_id("ddlinvestor")
+
+    # Outer loop through the first dropdown (ddlinvestor)
+    for investor in investor_values:
+        print(f"Selected Investor: {investor}")
+        
+        # Select investor in the dropdown
+        investor_dropdown = Select(driver.find_element(By.ID, "ddlinvestor"))
+        investor_dropdown.select_by_visible_text(investor)
+        
+        # Wait 5 seconds as per the action sequence
+        sleep(5)
+
+        # Get the values from the second dropdown (ddfund)
+        fund_values = get_dropdown_values_by_id("ddfund")
+        
+        # Inner loop through the second dropdown (ddfund)
+        for fund in fund_values:
+            print(f"  Selected Fund: {fund}")
+            # Select fund in the dropdown
+            fund_dropdown = Select(driver.find_element(By.ID, "ddfund"))
+            fund_dropdown.select_by_visible_text(fund)
+
+            # Print the selected fund's name
+            print(f"    Fund Name: {fund}")
+
+        # Optional: Add a small sleep between each outer iteration if necessary
+        sleep(2)
+
+# Call the function to start the iteration process
+iterate_dropdowns()
+
+# Close the browser once done
+driver.quit()
