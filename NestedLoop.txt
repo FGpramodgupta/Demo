@@ -1,0 +1,117 @@
+import pandas as pd
+import time
+from selenium import webdriver
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# Initialize WebDriver (replace with your WebDriver path if necessary)
+driver = webdriver.Chrome()
+
+# Load the webpage
+driver.get("your_web_page_url")
+
+# Sample DataFrame
+data = {
+    'Action': [
+        'NestedLoop',
+        'Clicknext @id:ddlInvestors',
+        'Wait',
+        'Loop',
+        'Clicknext @id:ddlIVs',
+        'Click',
+        'Wait',
+        'Endloop',
+        'EndNestedloop'
+    ]
+}
+df = pd.DataFrame(data)
+
+# Helper function to click dropdown and return options
+def clicknext(identifier):
+    dropdown = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, identifier))
+    )
+    select = Select(dropdown)
+    options = [option.get_attribute("value") for option in select.options if option.get_attribute("value")]
+    return options
+
+# Helper function to perform clicks (replace with real click if necessary)
+def perform_click():
+    print("Performing click action")
+
+# Dynamic processing function
+def process_actions(df):
+    i = 0
+    while i < len(df):
+        action = df.loc[i, 'Action']
+        
+        # Process Nested Loop
+        if action == 'NestedLoop':
+            print("Starting Nested Loop")
+            i = process_nested_loop(df, i + 1)  # Process nested loop, move to the next index after the loop
+            print("Ending Nested Loop")
+        
+        i += 1  # Move to the next action outside loops
+
+# Helper function to process Nested Loop
+def process_nested_loop(df, start_index):
+    i = start_index
+    while i < len(df) and df.loc[i, 'Action'] != 'EndNestedloop':
+        action = df.loc[i, 'Action']
+        
+        if action.startswith('Clicknext'):
+            # Extract the dropdown id
+            identifier = action.split("@id:")[-1]
+            options = clicknext(identifier)
+            
+            for option_value in options:
+                select_dropdown(identifier, option_value)
+                
+                # Process actions within `Loop`
+                i = process_loop(df, i + 1) if i + 1 < len(df) and df.loc[i + 1, 'Action'] == 'Loop' else i
+            
+        elif action == 'Wait':
+            print("Waiting...")
+            time.sleep(1)
+        
+        i += 1  # Move within Nested Loop
+
+    return i
+
+# Helper function to process Loop within Nested Loop
+def process_loop(df, start_index):
+    i = start_index
+    while i < len(df) and df.loc[i, 'Action'] != 'Endloop':
+        action = df.loc[i, 'Action']
+        
+        if action.startswith('Clicknext'):
+            identifier = action.split("@id:")[-1]
+            options = clicknext(identifier)
+            
+            for option_value in options:
+                select_dropdown(identifier, option_value)
+        
+        elif action == 'Click':
+            perform_click()
+        
+        elif action == 'Wait':
+            print("Waiting...")
+            time.sleep(1)
+        
+        i += 1  # Move within Loop
+
+    return i
+
+# Function to select a dropdown option by id and value
+def select_dropdown(identifier, value):
+    select = Select(driver.find_element(By.ID, identifier))
+    select.select_by_value(value)
+    print(f"Selected {value} in dropdown with id '{identifier}'")
+
+# Run the processing function
+process_actions(df)
+
+# Close the driver after processing
+driver.quit()
