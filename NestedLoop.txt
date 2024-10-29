@@ -1,5 +1,119 @@
 import pandas as pd
 import re
+import time
+
+# Sample DataFrame with actions
+data = {
+    'Action': [
+        'NestedLoop',
+        'Clicknext @id:ddlInvestors',  # Investor dropdown
+        'Wait',
+        'Loop',
+        'Clicknext @id:ddlIVs',       # IVs dropdown (dependent on ddlInvestors selection)
+        'Click',
+        'Wait',
+        'Endloop',
+        'EndNestedloop'
+    ]
+}
+df = pd.DataFrame(data)
+
+# Sample dropdown values for testing
+dropdown_values = {
+    'ddlInvestors': ['Investor1', 'Investor2'],
+    'ddlIVs': {
+        'Investor1': ['IV1-1', 'IV1-2'],
+        'Investor2': ['IV2-1', 'IV2-2']
+    }
+}
+
+# Mock functions for Clicknext, Click, and Wait
+def Clicknext(dropdown_id, selected_value=None):
+    """Simulates loading dropdown values based on id and an optional selection."""
+    if selected_value:
+        # Load dependent values for ddlIVs based on selected ddlInvestors
+        return dropdown_values['ddlIVs'].get(selected_value, [])
+    else:
+        # Load values for ddlInvestors
+        return dropdown_values[dropdown_id]
+
+def Click(value):
+    """Simulates a click action on a value."""
+    print(f"Clicked on {value}")
+
+def Wait():
+    """Simulates a wait action."""
+    print("Waiting for 2 seconds...")
+    time.sleep(2)  # Simulating wait time (2 seconds)
+
+# Extract dropdown ID from Action string
+def get_dropdown_id(action):
+    """Extracts dropdown id from action text, e.g., 'Clicknext @id:ddlInvestors' -> 'ddlInvestors'."""
+    match = re.search(r'@id:(\w+)', action)
+    return match.group(1) if match else None
+
+# Function to process actions with dynamic dropdown logic and conditional handling
+def process_actions_with_dropdowns(df):
+    i = 0
+    while i < len(df):
+        action = df.loc[i, 'Action']
+        
+        # Start of NestedLoop
+        if action == 'NestedLoop':
+            i += 1
+            # Get the dropdown ID for the primary dropdown (first 'Clicknext' after 'NestedLoop')
+            primary_dropdown_id = None
+            while primary_dropdown_id is None and i < len(df):
+                primary_action = df.loc[i, 'Action']
+                if primary_action.startswith('Clicknext'):
+                    primary_dropdown_id = get_dropdown_id(primary_action)
+                i += 1
+            
+            # Load and iterate over primary dropdown values
+            if primary_dropdown_id:
+                primary_values = Clicknext(primary_dropdown_id)
+                for primary_value in primary_values:
+                    Click(primary_value)  # Click on each value in primary dropdown
+                    Wait()               # Wait after each click on primary dropdown
+                    
+                    # Process actions between Loop and Endloop within NestedLoop
+                    while i < len(df) and df.loc[i, 'Action'] != 'EndNestedloop':
+                        nested_action = df.loc[i, 'Action']
+                        
+                        if nested_action == 'Loop':
+                            i += 1
+                            # Get secondary dropdown ID for dependent dropdown within Loop
+                            secondary_dropdown_id = None
+                            while secondary_dropdown_id is None and i < len(df):
+                                secondary_action = df.loc[i, 'Action']
+                                if secondary_action.startswith('Clicknext'):
+                                    secondary_dropdown_id = get_dropdown_id(secondary_action)
+                                i += 1
+                            
+                            # Iterate through secondary dropdown values based on selected primary value
+                            if secondary_dropdown_id:
+                                secondary_values = Clicknext(secondary_dropdown_id, selected_value=primary_value)
+                                for secondary_value in secondary_values:
+                                    # Execute actions between Clicknext and Endloop for each secondary dropdown value
+                                    j = i
+                                    while j < len(df) and df.loc[j, 'Action'] != 'Endloop':
+                                        action_after_clicknext = df.loc[j, 'Action']
+                                        if action_after_clicknext == 'Click':
+                                            Click(secondary_value)
+                                        elif action_after_clicknext == 'Wait':
+                                            Wait()
+                                        j += 1
+                        i += 1
+        i += 1
+
+# Run the function
+process_actions_with_dropdowns(df)
+
+
+
+
+import pandas as pd
+import re
 
 # Sample DataFrame with actions
 data = {
