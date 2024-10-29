@@ -1,4 +1,88 @@
 import pandas as pd
+
+# Sample DataFrame with actions and multiple nested loops
+data = {
+    'Action': [
+        'NestedLoop',
+        'Clicknext @id:ddlInvestors',
+        'Wait',
+        'NestedLoop',   # Nested within the first NestedLoop
+        'Clicknext @id:ddlPartners',
+        'Wait',
+        'Loop',         # Loop within the second NestedLoop
+        'Clicknext @id:ddlSubPartners',
+        'Click',
+        'Wait',
+        'Endloop',
+        'EndNestedloop',
+        'Click',
+        'EndNestedloop'
+    ]
+}
+df = pd.DataFrame(data)
+
+# Recursive function to generate loop iterators from the DataFrame
+def generate_loops(df, start_index=0, depth=0):
+    loops = []  # To hold actions for this level
+    i = start_index
+    
+    while i < len(df):
+        action = df.loc[i, 'Action']
+        
+        # Check for start of a Nested Loop
+        if action == 'NestedLoop':
+            # Recursive call to handle nested loops
+            nested_loop, i = generate_loops(df, i + 1, depth + 1)
+            loops.append(["NestedLoop"] + nested_loop + ["EndNestedloop"])
+        
+        # Check for start of a Loop
+        elif action == 'Loop':
+            inner_loop = []
+            i += 1
+            
+            # Collect actions within 'Loop' until 'Endloop'
+            while i < len(df) and df.loc[i, 'Action'] != 'Endloop':
+                inner_loop.append(df.loc[i, 'Action'])
+                i += 1
+            
+            inner_loop.append('Endloop')  # Close inner loop
+            loops.append(inner_loop)
+        
+        # End of current Nested Loop
+        elif action == 'EndNestedloop':
+            return loops, i  # Return loop actions and current index
+        
+        # Regular actions within loops
+        else:
+            loops.append([action])
+        
+        i += 1
+    
+    return loops, i
+
+# Main function to print all iterators from the DataFrame
+def print_loops(df):
+    all_loops, _ = generate_loops(df)
+    
+    # Print each loop level and actions
+    for idx, loop in enumerate(all_loops, start=1):
+        print(f"Iterator {idx}:")
+        for action in loop:
+            if isinstance(action, list):
+                # Print each sub-action with indentation
+                for sub_action in action:
+                    print(f"\t{sub_action}")
+            else:
+                print(f"\t{action}")
+        print()
+
+# Run the function to output the iterators
+print_loops(df)
+
+
+
+
+import pandas as pd
 import time
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
