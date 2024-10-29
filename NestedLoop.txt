@@ -1,5 +1,76 @@
 import pandas as pd
 
+# Sample DataFrame with actions
+data = {
+    'Action': [
+        'NestedLoop',
+        'Clicknext @id:ddlInvestors',
+        'Wait',
+        'Click',
+        'Loop',
+        'Clicknext @id:ddlIVs',
+        'Click',
+        'Wait',
+        'Endloop',
+        'EndNestedloop'
+    ]
+}
+df = pd.DataFrame(data)
+
+# Function to generate list of iterators as DataFrames
+def generate_iterators(df):
+    iterators = []
+    i = 0
+
+    while i < len(df):
+        action = df.loc[i, 'Action']
+
+        # Start of a Nested Loop
+        if action == 'NestedLoop':
+            nested_loop = [action]
+            i += 1
+
+            # Add actions until 'EndNestedloop'
+            while i < len(df) and df.loc[i, 'Action'] != 'EndNestedloop':
+                nested_loop.append(df.loc[i, 'Action'])
+
+                # Check for inner Loop within Nested Loop
+                if df.loc[i, 'Action'] == 'Loop':
+                    inner_loop = [df.loc[i, 'Action']]
+                    i += 1
+
+                    # Collect actions within 'Loop' until 'Endloop'
+                    while i < len(df) and df.loc[i, 'Action'] != 'Endloop':
+                        inner_loop.append(df.loc[i, 'Action'])
+                        i += 1
+
+                    inner_loop.append('Endloop')  # Close inner loop
+                    iterators.append(pd.DataFrame(inner_loop, columns=['Action']))  # Add inner loop DataFrame to list
+
+                i += 1
+
+            nested_loop.append('EndNestedloop')  # Close nested loop
+            iterators.append(pd.DataFrame(nested_loop, columns=['Action']))  # Add nested loop DataFrame to list
+
+        i += 1
+
+    return iterators
+
+# Generate the list of iterators as DataFrames
+iterator_dataframes = generate_iterators(df)
+
+# Display each iterator DataFrame
+for idx, iterator_df in enumerate(iterator_dataframes, start=1):
+    print(f"Iterator {idx} DataFrame:")
+    print(iterator_df)
+    print()
+
+
+
+
+
+import pandas as pd
+
 # Sample DataFrame with actions and multiple nested loops
 data = {
     'Action': [
