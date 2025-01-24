@@ -1,0 +1,33 @@
+### ADC Document Processing Workflow
+
+1. **Email Retrieval**:  
+   ADC retrieves emails from Lotus Notes or Outlook mailbox to procure required documents.
+
+2. **Service Mapping and Redirection**:  
+   ADC checks the service mapping configuration and redirects documents to either the Digitizer or JEDI for further processing.
+
+3. **File and Metadata Handling**:  
+   3.1. Downloaded files, along with metadata, are sent to Azure Blob storage via the NDG BAU route.  
+   3.2. If the document type is onboarded to JEDI, a copy of the PDF is sent to JEDI. Additionally, a request copy is triggered to the JEDI service.
+
+4. **Document Details Extraction and JSON Generation**:  
+   4.1. JEDI extracts details from cash-related documents.  
+   4.2. The JSON builder generates a Cash JSON based on JEDI's output and saves it in Cosmos DB, tagged with AleGenID.
+
+5. **Document Processing by NDG**:  
+   The document is processed by NDG through the BAU route, depending on the trained model. Results are displayed in the Digitizer UI.
+
+6. **Display on Digitizer UI**:  
+   Results from NDG processing are displayed on the Digitizer UI.
+
+7. **JEDI Document Validation and Processing**:  
+   7.1. Verify if the document is onboarded to JEDI.  
+   7.1.a. Trigger a webhook call from NDG to fetch cash-specific details like breakdowns and multi-series tables.  
+   7.2. Invoke the business calculation engine for complex calculations.  
+   7.1.b & 7.2.b. Combine outputs to generate the final JSON.
+
+8. **Final Results on Digitizer UI**:  
+   The final JSON results are displayed on the Digitizer UI for review.
+
+9. **Validation and Enrichment**:  
+   Once the partner validates the document, the combined JSON is sent to the New Enricher Service for further processing.
