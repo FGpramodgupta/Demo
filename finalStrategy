@@ -1,0 +1,29 @@
+Here’s a **comparison table** summarizing the four deployment strategies based on key factors like **scalability, cost, performance, security, and maintenance**.  
+
+---
+
+### **Deployment Strategies Comparison**  
+
+| **Factor**                          | **Strategy 1** <br> JEDi (On-Prem Windows) <br> Business Calc (Azure App Service) | **Strategy 2** <br> JEDi (Azure App Service) <br> Business Calc (Azure App Service) | **Strategy 3** <br> JEDi (On-Prem Windows) <br> Business Calc (Azure Kubernetes Service) | **Strategy 4** <br> JEDi (On-Prem Windows) <br> Business Calc (On-Prem PCF) |
+|--------------------------------------|---------------------------------------------------------------------------------|---------------------------------------------------------------------------------|---------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
+| **Scalability**                      | ❌ Limited scalability for JEDi, App Service scales well for Business Calc | ✅ Fully scalable with Azure Auto-Scaling | ✅ Business Calc scales well in AKS, JEDi is limited on-prem | ❌ No auto-scaling, PCF is limited by on-prem infrastructure |
+| **Performance**                      | ⚠️ Potential latency between on-prem JEDi & cloud Business Calc | ✅ Optimized performance with both services in the cloud | ⚠️ Possible latency between on-prem JEDi & AKS | ❌ On-prem limitations may impact performance |
+| **Security & Compliance**             | ✅ JEDi on-prem ensures control; Azure App Service has strong security features | ✅ Azure provides enterprise-grade security & compliance | ✅ AKS ensures security; JEDi on-prem maintains data control | ✅ On-prem ensures full control, but security updates are manual |
+| **Maintenance Effort**                | ⚠️ Requires manual maintenance for on-prem JEDi, App Service is managed | ✅ Fully managed by Azure, minimal maintenance required | ⚠️ AKS requires Kubernetes expertise; JEDi needs on-prem management | ❌ High effort for maintaining both on-prem components |
+| **Deployment Complexity**             | ⚠️ Hybrid model requires secure integration between on-prem & Azure | ✅ Simplest deployment with everything in Azure | ⚠️ AKS adds complexity; JEDi remains manually managed | ❌ High complexity in managing both JEDi & Business Calc on-prem |
+| **Cost Efficiency**                   | ⚠️ On-prem JEDi is cost-effective, but App Service costs increase with usage | ❌ Fully cloud-based; higher cost for computing & storage | ⚠️ AKS may be expensive depending on workloads | ✅ On-prem reduces cloud costs but increases infrastructure maintenance costs |
+| **Reliability & High Availability**   | ⚠️ JEDi on-prem has a single point of failure; App Service is highly available | ✅ Azure ensures high availability & redundancy | ✅ AKS provides high availability; JEDi on-prem is a single point of failure | ❌ No built-in redundancy; risk of outages |
+| **Communication Between Services**    | ⚠️ Kafka-based integration between on-prem JEDi & Azure Business Calc | ✅ API-based integration within Azure simplifies communication | ⚠️ Kafka used for on-prem to AKS communication, may introduce delays | ⚠️ Kafka used for on-prem to on-prem communication, but no cloud flexibility |
+| **Ease of Future Expansion**          | ⚠️ JEDi might become a bottleneck if business scales | ✅ Easier to expand cloud infrastructure in Azure | ✅ AKS allows container-based scaling, but JEDi is limited | ❌ Difficult to scale both on-prem JEDi & PCF |
+
+---
+
+### **Key Takeaways**  
+
+- **Best for Scalability & Performance:** **Strategy 2 (Fully Cloud - Azure App Service)**  
+- **Best for Security & Compliance:** **Strategy 4 (Fully On-Prem - JEDi on Windows Server, Business Calc on PCF)**  
+- **Best for Hybrid Flexibility:** **Strategy 3 (JEDi On-Prem, Business Calc on AKS)**  
+- **Best for Cost Efficiency (Short Term):** **Strategy 4 (Fully On-Prem)**  
+- **Best for Future Growth & Modernization:** **Strategy 2 or Strategy 3**  
+
+Let me know if you need more refinements! 🚀
