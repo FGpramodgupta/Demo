@@ -1,0 +1,82 @@
+### **End-to-End Flow of ADC, JEDi, and Business Calculation Engine Integration with Deployment Strategy**  
+
+#### **Flow Overview**  
+
+1. **Email Processing & Document Procurement**  
+   - Emails are processed in **ADC**, and the attached document is procured.  
+
+2. **Routing via Service Mapping**  
+   - The **Router Service** in ADC routes the document based on the **service mapping configuration**.  
+
+3. **Existing NT Digitizer Flow**  
+   - If the document follows the **NT Digitizer** process, it is uploaded to **Azure Blob Storage** for further processing.  
+
+4. **JEDi Configuration Check & Metadata Transfer via Kafka**  
+   - If **JEDi is configured** for the document’s domain, ADC sends the document metadata to **JEDi via Kafka**.  
+
+5. **JEDi Extraction Process**  
+   - The **JEDi Extractor** reads the document from **Azure Blob Storage**.  
+   - It sends the document to **Azure Form Recognizer**, which extracts **paragraphs, tables, and key-value pairs**.  
+   - A domain-specific **Form Recognizer model** is used for extraction.  
+
+6. **JSON Building & Storage**  
+   - After extraction, the **JSON Builder** creates the **Final JEDi JSON** output.  
+   - This final JSON is stored in **Cosmos DB** with an **ADCGenID**, making it available for NT Digitizer processing.  
+
+7. **NT Digitizer Processing**  
+   - The **Digitizer** reads the document from **Azure Blob Storage**.  
+   - It extracts relevant information from the document and processes it further.  
+
+8. **Business Calculation Engine Processing**  
+   - The **Digitizer Output** is sent to the **Business Calculation Engine**, which is hosted on **On-Prem PCF (Pivotal Cloud Foundry)**.  
+   - If a **JEDi Final Output** exists (identified via **ALEGenID**), the Business Calculation Engine **combines both JEDi and Digitizer outputs** for processing.  
+   - **Note:** Python is **not natively supported** in PCF NT, so the team can use it at their own responsibility.  
+
+9. **Final Output & UI Validation**  
+   - The **final JSON output** is sent back to the **Digitizer**.  
+   - The extracted and calculated results are displayed on the **UI**, where **BAU users validate the output**.  
+
+---
+
+## **Deployment Strategy**  
+
+- **JEDi Deployment:** Hosted on an **On-Prem Windows Server**  
+- **Business Calculation Engine Deployment:** Hosted on **On-Prem PCF (Pivotal Cloud Foundry)**  
+
+### **Pros & Cons of Deployment Strategy**  
+
+#### **JEDi on On-Prem Windows Server**  
+✅ **Pros:**  
+- **Security & Data Control:** Complete control over data and infrastructure.  
+- **Seamless Integration with ADC:** Low latency due to on-prem connectivity.  
+- **Custom Configuration:** More flexibility in configuring and maintaining JEDi.  
+
+❌ **Cons:**  
+- **Scalability Issues:** On-prem infrastructure has limitations on scaling dynamically.  
+- **Maintenance Overhead:** Requires IT team support for infrastructure management.  
+- **Risk of Downtime:** No cloud-based failover; requires disaster recovery planning.  
+
+---
+
+#### **Business Calculation Engine on On-Prem PCF (Pivotal Cloud Foundry)**  
+✅ **Pros:**  
+- **Scalability:** PCF provides a **containerized platform** for scalable applications.  
+- **Microservices Support:** PCF enables deployment of independent services.  
+- **On-Prem Compliance:** Meets enterprise security and compliance requirements.  
+
+❌ **Cons:**  
+- **Python Support Limitation:** Python is **not natively supported** in NT PCF, which could create compatibility challenges.  
+- **Operational Complexity:** PCF requires **Cloud Foundry expertise** for managing and deploying applications.  
+- **Infrastructure Dependency:** PCF is limited by **on-prem hardware capacity** and may not be as flexible as cloud-based services.  
+
+---
+
+### **Potential Optimizations**  
+- **Language Compatibility:** If Python is required, consider using **PCF Buildpacks or a sidecar service** for execution.  
+- **Hybrid Cloud Approach:** Evaluate **PCF-Tanzu or Azure PCF integration** for better scalability.  
+- **Security Enhancements:** Use **PCF Service Mesh** to enhance security and API communication between JEDi and PCF.  
+- **Load Balancing:** Implement **PCF Autoscaler** to manage dynamic workloads effectively.  
+
+---
+
+This **on-prem deployment strategy** ensures **data control and security** but may face **scalability and language compatibility challenges**. Let me know if you need further refinements! 🚀
