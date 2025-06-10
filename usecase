@@ -1,0 +1,58 @@
+Automation Plan for ADC Portal Configuration
+
+Background – Current ADC Setup
+
+At present, business partners manually configure navigation steps in the Automated Document Capture (ADC) system to interact with fund portals. These steps are specific to each portal and include:
+
+Navigating to a portal URL (e.g., google.com)
+Entering login credentials (username and password)
+Clicking login/submit
+Traversing through dropdowns, date pickers, and filters
+Downloading required documents
+Saving them in a predefined temporary shared path
+
+This setup requires the business team to manually inspect and configure element identifiers (IDs, class names, XPaths, etc.) for each step. On average, this process takes 3–4 days per portal.
+
+
+
+Problem Statement
+
+The manual setup process for each portal is:
+
+Time-consuming (3–4 days per portal)
+Dependent on technical expertise to inspect and hardcode DOM elements
+Error-prone and difficult to maintain when portals update UI/UX
+
+
+
+Use case 1: Accelerated Onboarding via Automation
+
+Objective:
+Reduce portal onboarding time from days to hours by automating the step configuration process.
+
+Approach:
+
+Use browser automation tools with intelligent DOM parsers
+Automatically identify fields like username, password, and submit buttons using semantic matching and ML models
+Capture click-flows and form submissions in real-time during a guided session or user demonstration
+Store the automatically generated sequence as a reusable workflow
+
+
+
+
+
+Use case 2: Prompt-Based Step Interpretation Using LLM Agent
+
+Objective:
+Enable non-technical users to onboard new portals by describing steps in simple English, without needing to inspect DOM elements.
+
+Approach:
+
+Create a Prompt-to-Automation Agent powered by an LLM 
+Business users describe the portal interaction in natural language, e.g.:
+
+“Go to portal X, enter login credentials, select year as 2024 from dropdown, download the latest monthly report”
+The agent interprets the instructions, maps them to actionable automation steps, and dynamically detects the required DOM elements
+
+
+
