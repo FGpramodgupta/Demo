@@ -31,6 +31,19 @@ def clean_metadata_value(value):
     # Replace each disallowed character with a space
     return re.sub(disallowed_chars, ' ', value)
 
+import re
+
+def clean_metadata_value(value):
+    # Step 1: Replace all dash-like characters with a standard hyphen
+    value = re.sub(r"[\u2012\u2013\u2014\u2015\u2212]", "-", value)
+
+    # Step 2: Remove everything that's NOT in the allowed character set
+    allowed_pattern = r"[^A-Za-z0-9\s~`!@#$%^&*()_\-+={}\[\]|\\:;\"'<>,.?/]"
+    value = re.sub(allowed_pattern, '', value)
+
+    return value
+
+
 text = "Valid@Text—but—this—em—dash—is—not—allowed 😎"
 cleaned = clean_metadata_value(text)
 print(cleaned)
